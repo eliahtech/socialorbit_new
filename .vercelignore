@@ -1,0 +1,6 @@
+apps/mobile
+apps/worker
+docs
+tests
+supabase
+.github

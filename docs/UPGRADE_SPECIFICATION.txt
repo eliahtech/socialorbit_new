@@ -1,0 +1,125 @@
+# MISSION
+
+You are a senior full-stack engineer taking over "SocialOrbit by ELIAHTECH" (repo root: socialorbit-pro/), a pre-production multi-tenant social-publishing SaaS (Node 26, TypeScript run via tsx, Express 5, Supabase Postgres/Auth/Storage, Redis + BullMQ worker, FFmpeg, vanilla-JS frontend in apps/web/public, Facebook/YouTube/LinkedIn OAuth).
+
+Goals, in priority order:
+1. Make the system install, typecheck, migrate, run, and pass real tests.
+2. Re-architect billing: REMOVE the direct M-Pesa (Daraja) integration, KEEP Pesapal (it already covers M-Pesa/mobile money and cards for Kenyan customers), and ADD PayPal for international customers, with proper multi-currency support.
+3. Harden security and verify the core flow end to end.
+Do NOT add unrelated product features.
+
+# NON-NEGOTIABLE RULES
+
+1. Never claim something works unless you ran it and saw it pass. Show the command and a summary of its output as evidence.
+2. Never fake, stub, or mock to make a check pass. Mock only at the outbound HTTP boundary in tests, and say so. Unimplemented features stay disabled and documented as such.
+3. If something is blocked (no network, no Supabase credentials, no provider sandbox), state exactly what is blocked and what the user must do. Do not guess or silently skip.
+4. Work in small steps. After each phase run the full gate (below). Do not start the next phase until the gate is green.
+5. Preserve existing safety behavior: publishing and social sync stay disabled by default; a checkout redirect never grants entitlements; only independently verified payments fulfill; ambiguous provider outcomes go to reconciliation, never blind retry.
+6. Keep docs honest. Update docs/IMPLEMENTATION_STATUS.md and docs/TEST_REPORT.md only with results you actually produced.
+7. Never commit or print secrets.
+8. Verify provider API details (endpoints, versions, field names, webhook events) against each provider's CURRENT official documentation before coding. Do not rely on memory.
+
+# THE GATE (run after every phase)
+
+npm ci && npm run typecheck && npm test && npm run test:syntax
+Plus every test suite added so far (DB, API, E2E). All must exit 0.
+
+# PHASE 0: BASELINE
+
+- Read README.md, docs/*.md, all migrations, and every file in apps/ and packages/. Summarize the architecture in 10 lines.
+- Run npm install, commit package-lock.json, switch CI to npm ci.
+- Run npm run typecheck. List every error and fix all of them properly (no `any` or ts-ignore shortcuts unless justified in a comment).
+- Pin a tested Node version in package.json engines and .nvmrc. Make the test script work across platforms.
+
+# PHASE 1: DATABASE
+
+- Apply migrations 001, 002, 003 to a clean local Postgres/Supabase (supabase CLI local stack or a disposable project). Fix every migration error; verify they apply in order on a fresh DB.
+- 002 and 003 both define fulfill_verified_payment. Consolidate into a single, final, correct definition: atomic, idempotent (replay must not double-credit or double-extend), checks payment status, purpose, amount AND currency.
+- Write DB tests: credit_reserve/settle/release (concurrency, double-settle, over-reserve), fulfill_verified_payment replay and concurrency, new-user and new-workspace triggers.
+- RLS: automated tenant-isolation test with two users in two workspaces. For every table with workspace_id, prove user A cannot select/insert/update/delete workspace B's rows as anon/authenticated. Tables holding secrets (oauth_credentials, oauth_sessions, payment provider data) must be unreadable by anon and authenticated. Fix every gap.
+
+# PHASE 2: BILLING REWORK (M-PESA OUT, PAYPAL IN, MULTI-CURRENCY)
+
+## 2.1 Remove direct M-Pesa
+- Delete the mpesa branch in apps/api/src/routes/billing.ts, startStk/verifyStk and helpers in services/payments.ts, the /api/webhooks/mpesa route, M-Pesa env vars in .env.example, and M-Pesa references in docs, UI and tests.
+- Keep normalizeKenyanPhone only if still used (e.g. for Pesapal billing details); otherwise remove it and its tests.
+- Write a migration that updates any payments.provider check constraint/enum to allow ('pesapal','paypal'), while preserving historical 'mpesa' rows (keep the old value allowed for existing records, but reject it for new inserts, or document the alternative you chose).
+- Confirm in Pesapal's current docs that M-Pesa/mobile money is available through Pesapal for the merchant account. Surface "Pay with M-Pesa or card (Pesapal)" in the UI for Kenyan customers.
+
+## 2.2 Multi-currency model
+- Add currency support: plans and credit_packs get explicit price columns per supported currency (at minimum KES and USD), or a prices table keyed by (item, currency). Payments store `currency` and `amount_minor` (integer minor units, no floats for money). Update packages/core/src/money.ts and its tests accordingly.
+- Remove every hard-coded 'KES' assumption (checkout creation, Pesapal webhook verification, admin revenue reporting). Verification must compare against the STORED payment currency and amount.
+- Admin revenue reporting must group by currency and never sum across currencies.
+- Provider/currency routing rule: Pesapal defaults to KES; PayPal defaults to USD. Confirm with Pesapal's current docs and the user's account whether USD via Pesapal is enabled; do not assume.
+
+## 2.3 PayPal integration
+Use PayPal's current REST APIs (verify docs). Required behavior:
+- Create orders server-side (Orders API v2) with intent CAPTURE, amount/currency taken from the server's price tables only (never from the client), our unique reference stored in custom_id/invoice_id, and a PayPal-Request-Id idempotency header on creation and capture calls.
+- The client approves the order on PayPal; our SERVER then captures it. Never mark a payment paid because the browser says so or because a return URL was hit.
+- Fulfill only when a server-side capture/lookup shows status COMPLETED for the exact order ID we created, and amount, currency, and our reference match the stored payment row. Then call fulfill_verified_payment.
+- Webhook endpoint: verify authenticity with PayPal's webhook signature verification API using the configured webhook ID (fail closed if verification fails or the ID is unset). Treat webhook bodies as hints; always re-fetch the order/capture from PayPal before acting. Make processing idempotent by storing processed event IDs.
+- Handle PAYMENT.CAPTURE.PENDING (hold, do not fulfill), DENIED, REFUNDED, REVERSED and dispute events: mark the payment accordingly, reverse or suspend entitlements through a DB function that is itself idempotent and audited, notify the workspace owner and admins.
+- Sandbox vs live selected by PAYPAL_ENV; fail closed in production if live credentials or the webhook ID are missing. Env vars: PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_WEBHOOK_ID, PAYPAL_ENV. Update .env.example and config validation.
+- Billing model: implement one-time payments that grant a billing period (subscription period extension) and top-ups. Also implement period expiry, grace handling, downgrade-to-free on expiry, and renewal reminder notifications, since one-time payments do not auto-renew. Document clearly that auto-renewing subscriptions via PayPal Subscriptions are NOT implemented unless you implement and test them.
+
+## 2.4 Provider abstraction and risk control
+- Introduce a PaymentProvider interface (createCheckout, verify, handleWebhook, refund/reversal mapping) with PesapalProvider and PayPalProvider implementations, so billing routes contain no provider-specific logic and a future gateway can be added without touching routes.
+- Add admin-controlled feature flags to enable/disable each provider independently at runtime, and show only enabled providers in the UI. Reason: PayPal accounts in Kenya have been restricted or frozen in the past, and one provider must never be a single point of failure.
+- Add a reconciliation job and admin screen: list payments stuck in processing/pending beyond a threshold, re-query the provider, and resolve safely. Write a runbook for it.
+
+## 2.5 Billing tests
+- Unit/integration tests (provider HTTP mocked only at the fetch boundary) covering: unverified, wrong-amount, wrong-currency, wrong-reference, replayed, pending, denied, refunded, reversed and failed events never fulfill or always reverse correctly; a verified one fulfills exactly once, even with concurrent duplicate webhooks plus a manual reconciliation.
+- Test that a client cannot choose its own price, currency, plan or credit quantity.
+- Test provider flags (disabled provider rejects checkout).
+- Test period extension, expiry and downgrade logic.
+
+# PHASE 3: API CORRECTNESS AND TESTS
+
+- Export the Express app separately from app.listen so it is testable. Add an integration suite (node:test or vitest + supertest) against the test database.
+- For EVERY route test: unauthenticated (401), wrong workspace (403), insufficient role (403), invalid body (400), happy path. Add an automated route-by-role matrix test that fails if any route lacks needSpace/needAdmin where required.
+- Media: test size mismatch, wrong MIME, expired and replayed completion; add magic-byte sniffing of the stored object so declared MIME is not trusted alone.
+- OAuth: test state tampering, replay, expiry, demoted initiator, plan account-limit enforcement.
+- Publisher: test claim race (two workers, one job), kill switch, disabled flag, credit reserve/settle/release on success and failure, ambiguous result to needs_reconciliation. Add safe recovery for jobs stuck in `processing` beyond a timeout (move to needs_reconciliation; never auto re-publish).
+
+# PHASE 4: SECURITY HARDENING
+
+- Derive separate keys via HKDF from ENCRYPTION_KEY_HEX for token encryption and OAuth-state HMAC; keep decryption backward compatible or document and script a migration. Add tests.
+- Replace the single global rate limit with stricter per-IP limits on OAuth/webhook-adjacent routes and per-user limits on AI, checkout, upload-request and publishing routes. Webhook routes must not be locked out by normal provider traffic.
+- Admin: require MFA (aal2) in needAdmin in production with a documented dev override; audit-log every admin mutation.
+- CSP: remove https://esm.sh from scriptSrc by bundling or vendoring a pinned copy of the Supabase client; allow only the PayPal SDK origins if you use PayPal's JS buttons (verify the exact origins in PayPal docs) and nothing broader. Remove 'unsafe-inline' for styles if feasible. Verify the app loads with zero CSP violations.
+- Audit every innerHTML in apps/web/public/*.js: every interpolated value must pass through the escape helper. Add a test rendering hostile strings (<script>, quotes, javascript: URLs) through the main views.
+- Token refresh: implement Facebook long-lived token handling and LinkedIn refresh, or mark connections as expiring and surface `needs_reauth` in the UI. On refresh failure set needs_reauth.
+- Verify the Facebook Graph API version, Google and LinkedIn endpoints against current docs; fix anything outdated.
+- Run npm audit; fix or document every high/critical finding. Add request IDs and structured logging that never logs tokens, payment payloads or bulk emails.
+- Production startup fails closed on missing/invalid ENCRYPTION_KEY_HEX, Supabase keys, non-https PUBLIC_BASE_URL, or missing payment webhook secrets for any ENABLED provider.
+
+# PHASE 5: WORKER AND FRONTEND
+
+- Run API + worker + Redis + FFmpeg together. Test the clip path with a real small MP4. Fix failures. Confirm media cleanup honors the 7-day expiry and never deletes media attached to scheduled jobs.
+- Playwright E2E for the core flow: sign up, create workspace, draft, upload, schedule (publishing disabled; assert job state), billing page showing only enabled providers and correct currency, PayPal sandbox checkout through capture, support ticket, admin denied for normal users. Fix every console error and failed request found.
+- Refactor app.js into small ES modules (views, api client, state, helpers) with NO behavior change; E2E must be green before and after.
+- Billing UI: currency/provider selection, clear price display per currency, payment history with status, clear messaging for pending/refunded/reversed payments.
+- Accessibility pass (labels, focus, contrast) and a Lighthouse PWA check.
+
+# PHASE 6: VERIFIED CORE SLICE (needs real sandbox credentials)
+
+1. Pesapal sandbox: a real test transaction fulfills exactly once; a failed one does not.
+2. PayPal sandbox: create, approve, server capture, fulfill exactly once; refund/reversal webhook correctly suspends entitlements; webhook signature verification works with a valid and a tampered payload.
+3. Facebook Page text publish to a test Page with ENABLE_PUBLISHING=true in a test environment only.
+4. YouTube MP4 upload to a test channel, private/unlisted in test.
+If credentials are missing, STOP and give the user an exact checklist (accounts to create, apps to register, webhook URLs to set, env vars to fill). Do not fake results.
+
+# PHASE 7: DOCS AND RELEASE READINESS
+
+- Update README, DEPLOYMENT, SECURITY, API docs and the master status matrix to match reality (M-Pesa direct integration removed; M-Pesa available via Pesapal; PayPal added).
+- Add runbooks: payment reconciliation, PayPal dispute/reversal handling, provider outage/account restriction (how to disable a provider and communicate), stuck publishing jobs.
+- CI runs the full gate, DB tests, API tests and Playwright on every PR.
+- Add a legal/compliance checklist for the user to review (privacy policy, terms, refund policy, tax and invoicing obligations, PayPal and Pesapal acceptable-use and merchant verification requirements). Do not give legal advice; flag items for the owner and a qualified professional.
+
+# FINAL REPORT FORMAT
+
+End with:
+1. Table of phases: done / partial / blocked, with evidence (commands run and results).
+2. Every bug found and fixed (file, cause, fix, test that now covers it).
+3. Anything still failing, blocked or unverified, and exactly what is needed to unblock it.
+4. A candid readiness assessment: what can be used in a paid pilot today and what cannot.

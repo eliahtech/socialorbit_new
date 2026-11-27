@@ -1,0 +1,1931 @@
+# SOCIALORBIT BY ELIAHTECH
+## MASTER SOFTWARE ENGINEERING, IMPLEMENTATION, SECURITY & QUALITY ASSURANCE PROMPT
+
+**Project:** SocialOrbit  
+**Parent Company:** ELIAHTECH  
+**Tagline:** Create • Automate • Grow  
+**Product Type:** Multi-Tenant AI-Powered Social Media Management SaaS  
+**Target Platforms:** Web, Progressive Web App, Android and iOS  
+**Target Market:** Global creators, businesses, agencies and social media managers  
+**Primary Goal:** Build a complete, professional, production-ready system with fully integrated modules, secure operations, reliable automation and verified functionality.
+
+---
+
+# 1. YOUR ROLE AND MISSION
+
+Act as an elite multidisciplinary software engineering team consisting of:
+
+- Principal Software Architect
+- Senior Full-Stack Engineer
+- TypeScript and Node.js Specialist
+- Frontend UI/UX Engineer
+- Mobile Application Engineer
+- PostgreSQL and Supabase Database Architect
+- Social Media API Integration Specialist
+- AI/LLM Integration Engineer
+- Video Processing Engineer
+- SaaS Subscription and Billing Engineer
+- Cybersecurity Engineer
+- DevOps and Infrastructure Engineer
+- Automated Testing and QA Engineer
+- Accessibility and Performance Engineer
+- Technical Documentation Specialist
+
+Your responsibility is to **design, implement, integrate, test, secure and document the entire SocialOrbit platform**.
+
+Do not deliver a collection of disconnected templates, placeholder dashboards, unfinished modules or mock features presented as working software.
+
+Build a real application where every implemented button, navigation item, API route, database operation, form, background job and supported integration behaves correctly.
+
+## Mandatory engineering principles
+
+1. Design the complete architecture before implementation.
+2. Use clean, maintainable, modular and strongly typed code.
+3. Implement modules systematically without losing previously completed work.
+4. Do not silently omit requirements.
+5. Avoid unnecessary dependencies and architectural complexity.
+6. Never expose secrets, API keys or OAuth tokens to the frontend.
+7. Use real database operations rather than hardcoded demonstration data.
+8. Implement robust validation, error handling, loading states and empty states.
+9. Write automated tests alongside the functionality.
+10. Run relevant tests after each module and regression tests after integration.
+11. Fix all reproducible critical and high-severity defects before delivery.
+12. Never claim that unexecuted tests have passed.
+13. Never simulate successful external publishing or payments in production.
+14. Clearly document limitations imposed by external platform APIs.
+15. Preserve functionality when implementing enhancements.
+16. Deliver a working system with reproducible installation, deployment and testing instructions.
+
+If an external provider requires credentials, account approval or payment, implement the integration architecture, secure configuration, sandbox or mock testing where appropriate, and clearly identify what remains necessary for live activation.
+
+**Definition of success:** A verified, deployable, maintainable platform whose implemented functionality passes the specified acceptance tests and whose external dependencies are accurately documented.
+
+---
+
+# 2. PRODUCT VISION
+
+SocialOrbit is an intelligent social media management platform that allows users to create, optimize, distribute, schedule, monitor and manage social media content from one workspace.
+
+The platform must provide:
+
+- Unified management of authorized social accounts
+- AI-powered content creation and optimization
+- Cross-platform publishing
+- Facebook Page and YouTube channel content detection
+- Historical video discovery and redistribution
+- Intelligent scheduling and automation
+- Video repurposing
+- Thumbnail and graphics creation
+- Evergreen content recycling
+- Multilingual content localization
+- Unified engagement management where supported
+- Advanced analytics
+- Publishing risk checks
+- Subscription plans and AI credit management
+- Professional customer support and feedback
+- Complete Super Admin operations
+- Responsive web and native mobile applications
+
+Users must be able to start work on one device and continue on another using the same account.
+
+---
+
+# 3. OFFICIAL BRAND IDENTITY
+
+Use the established SocialOrbit branding.
+
+**Brand Name:** SocialOrbit  
+**Parent Brand:** ELIAHTECH  
+**Tagline:** Create • Automate • Grow
+
+### Official visual direction
+
+- Deep Navy: `#0B1F44`
+- Electric Blue: `#2563EB`
+- Vivid Purple: `#8B5CF6`
+- Orbit Cyan: `#06B6D4`
+- White: `#FFFFFF`
+
+Typography: Montserrat for prominent headings, with a readable complementary body font.
+
+Use the previously designed SocialOrbit brand concept featuring an orbital S-shaped emblem, a play symbol and growth analytics elements.
+
+The brand assets should include:
+
+- Primary logo
+- Horizontal logo
+- Compact logo
+- Dark-background logo
+- Light-background logo
+- Website favicon
+- Android application icon
+- iOS application icon
+- Splash screen
+- Social sharing image
+- Email branding assets
+
+When source design assets are provided, reuse them faithfully. Otherwise recreate suitable editable assets and obtain approval before replacing the established identity.
+
+Maintain consistent visual styling throughout the public website, creator dashboard, administrator dashboard and mobile applications.
+
+---
+
+# 4. TECHNOLOGY STACK
+
+## Frontend
+
+Use:
+
+- HTML5
+- CSS3
+- Bootstrap 5
+- Modern JavaScript
+- TypeScript where appropriate
+- Responsive layouts
+- Accessible UI components
+- Progressive Web App support
+
+Avoid introducing Next.js unless a demonstrated technical requirement justifies changing the agreed stack.
+
+## Backend
+
+- Node.js
+- Express.js
+- TypeScript
+- REST APIs
+- OpenAPI documentation
+- Zod or equivalent request validation
+- Structured logging
+- Centralized error handling
+
+Use an actively supported Node.js version compatible with the selected deployment environment. Do not assume a requested future major version is supported without verification.
+
+## Database and authentication
+
+- Supabase PostgreSQL
+- Supabase Auth
+- Supabase Storage
+- PostgreSQL migrations
+- Row Level Security
+- Secure server-side database access
+
+## Background processing
+
+- BullMQ
+- Redis
+- Dedicated worker processes
+- FFmpeg
+- FFprobe
+- Scheduled synchronization
+- Retry and recovery mechanisms
+
+## Infrastructure
+
+- Vercel for the website and compatible short-running API endpoints
+- Dedicated worker hosting for long-running jobs
+- Managed Redis
+- Supabase for persistent application data
+- Optional Cloudflare R2 for scalable object storage
+- GitHub Actions for CI/CD
+
+## AI providers
+
+- OpenRouter as the primary AI gateway
+- Gemini as an optional direct provider
+- Groq as an optional direct provider
+- Supported image-generation models
+- Configurable model routing and fallback
+
+## Payments
+
+- M-Pesa
+- Pesapal
+
+## Email
+
+- Brevo transactional email service
+
+The application must use environment variables and secure secret management for all credentials.
+
+---
+
+# 5. SYSTEM ARCHITECTURE
+
+Implement a modular monolith with separately deployable web, API and worker applications.
+
+Use this project structure:
+
+```text
+socialorbit/
+├── apps/
+│   ├── web/
+│   ├── mobile/
+│   ├── api/
+│   └── worker/
+├── packages/
+│   ├── shared/
+│   ├── database/
+│   ├── social-adapters/
+│   ├── ai-gateway/
+│   ├── billing/
+│   ├── media/
+│   ├── validation/
+│   └── ui/
+├── supabase/
+│   ├── migrations/
+│   └── seeds/
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── e2e/
+│   ├── security/
+│   └── performance/
+├── docs/
+├── scripts/
+├── .github/workflows/
+├── package.json
+└── README.md
+```
+
+Use shared domain types, schemas, validation rules and API clients where practical.
+
+Separate business logic from Express controllers and external API adapters.
+
+Every module must enforce tenant isolation.
+
+---
+
+# 6. MULTI-TENANT USER AND WORKSPACE SYSTEM
+
+Implement professional account and workspace management.
+
+### Authentication
+
+Support:
+
+- Email and password registration
+- Google authentication
+- Email verification
+- Password reset
+- Secure login
+- Session refresh
+- Logout
+- Logout from all sessions where supported
+- Account recovery
+- Optional MFA
+- Secure account deletion
+
+Use Supabase Auth and Brevo for supported transactional email workflows.
+
+### User profiles
+
+Each profile should support:
+
+- Full name
+- Username
+- Profile picture
+- Email address
+- Phone number
+- Country
+- Timezone
+- Preferred language
+- Brand preferences
+- Notification preferences
+- Subscription details
+- Account security settings
+
+### Workspaces
+
+Allow users to create and manage workspaces.
+
+Support:
+
+- Workspace owners
+- Administrators
+- Editors
+- Analysts
+- Viewers
+
+Enforce permissions on the server.
+
+Agency users should be able to manage multiple client workspaces subject to their subscription limits.
+
+Never allow one workspace to access another workspace's content, credentials, billing records or private analytics.
+
+---
+
+# 7. SOCIAL ACCOUNT CONNECTIONS
+
+Support authorized integrations for:
+
+1. Facebook Pages
+2. YouTube Channels
+3. Instagram professional accounts
+4. TikTok
+5. X
+6. LinkedIn
+
+Implement provider-specific OAuth and permission handling.
+
+### Account management
+
+Users must be able to:
+
+- Connect supported accounts
+- View connection status
+- Reconnect expired accounts
+- Disconnect accounts
+- Assign accounts to workspaces
+- Select default publishing destinations
+- Enable or disable automation per account
+- Review granted permissions
+- View connection errors
+- Configure destination-specific publishing settings
+
+Encrypt sensitive provider credentials at rest.
+
+Never log access tokens or refresh tokens.
+
+### API restrictions
+
+Do not assume all social networks support identical operations.
+
+Implement a provider capability registry covering:
+
+- Text publishing
+- Image publishing
+- Video publishing
+- Reels or short-form video publishing
+- Content discovery
+- Historical content access
+- Comments
+- Direct messages
+- Analytics
+- Webhooks
+- Account-specific restrictions
+
+Disable unsupported operations with clear explanations.
+
+Do not use unauthorized scraping or undocumented private APIs as substitutes for official permissions.
+
+Facebook personal profile auto-publishing must not be presented as generally supported.
+
+YouTube video metadata access must not be treated as permission or ability to download original uploaded videos.
+
+---
+
+# 8. CONTENT MANAGEMENT SYSTEM
+
+Create a complete content library.
+
+### Content types
+
+- Text posts
+- Images
+- Videos
+- Short-form videos
+- Multi-image posts where supported
+- Drafts
+- AI-generated graphics
+- Video clips
+- Platform-specific content variants
+
+### Content library features
+
+- Search
+- Filters
+- Tags
+- Categories
+- Content previews
+- Draft management
+- Publication status
+- Content history
+- Platform destinations
+- Duplicate detection
+- Media expiration indicators
+- Bulk operations where safe
+
+### Content states
+
+Use explicit states such as:
+
+- Draft
+- Awaiting Approval
+- Scheduled
+- Queued
+- Processing
+- Publishing
+- Published
+- Partially Published
+- Failed
+- Cancelled
+- Expired
+
+Persist every state transition appropriately.
+
+---
+
+# 9. AUTOMATIC CONTENT DETECTION
+
+Facebook Pages and YouTube Channels are primary content sources.
+
+Implement:
+
+- Webhook handling where available
+- Scheduled polling where necessary
+- Historical metadata synchronization
+- Incremental synchronization
+- Duplicate event suppression
+- Connection error recovery
+- Sync progress tracking
+
+### New content
+
+Detect eligible new videos and images from supported sources.
+
+Allow automatic or approval-based redistribution according to user-configured rules.
+
+New Facebook Page images may be distributed where authorized and technically supported.
+
+### Historical content
+
+Discover eligible old videos from connected sources.
+
+Do not backfill old images.
+
+Allow historical video redistribution only when reusable media is legitimately available and publishing is permitted.
+
+Provide a clear status when metadata exists but original media is unavailable.
+
+Never invent a download mechanism.
+
+---
+
+# 10. INTELLIGENT CROSS-PLATFORM PUBLISHING
+
+Create a publishing engine using provider-specific adapters.
+
+Users must be able to:
+
+- Select destinations
+- Customize captions per destination
+- Add hashtags
+- Preview content
+- Save drafts
+- Publish immediately
+- Schedule publication
+- Configure time slots
+- Approve content
+- Cancel scheduled jobs
+- Retry eligible failed jobs
+
+### Video routing
+
+Use FFprobe to inspect accessible media.
+
+Evaluate:
+
+- Duration
+- Aspect ratio
+- Resolution
+- File size
+- Codec
+- Audio
+- Platform requirements
+
+Allow users to express preferences for short-form or regular video formats.
+
+Never promise that an API can force a Reel, Short or other classification when that platform controls classification.
+
+Do not silently crop or truncate content.
+
+### Reliability
+
+Each destination must have an independent publishing job.
+
+Implement:
+
+- Idempotency keys
+- Retry policies
+- Exponential backoff
+- Rate-limit handling
+- Dead-letter queues
+- Failure classifications
+- Status reconciliation
+- Duplicate-publication prevention
+
+Avoid automatically retrying ambiguous publish outcomes until the platform's actual result is reconciled.
+
+---
+
+# 11. HISTORICAL VIDEO REDISTRIBUTION
+
+Users must be able to redistribute eligible old videos gradually.
+
+### Scheduling options
+
+- Morning slots
+- Afternoon slots
+- Evening slots
+- Custom times
+- Selected weekdays
+- Maximum videos per slot
+- Maximum daily publications
+- Platform-specific destinations
+- Chronological or reverse chronological ordering
+- Randomized ordering where appropriate
+- Pause and resume
+
+### Quota rules
+
+Distinguish:
+
+**Unique old videos distributed** from **individual publishing jobs**.
+
+Example:
+
+One old video distributed to three destinations consumes one old-video allowance and three publishing-job allowances, according to the applicable plan.
+
+Prevent repeated distribution beyond configured limits.
+
+---
+
+# 12. EVERGREEN CONTENT RECYCLING
+
+Allow users to automatically reuse eligible content.
+
+Features:
+
+- Evergreen collections
+- Recycling intervals
+- Maximum repetitions
+- Destination exclusions
+- Frequency limits
+- Content expiration checks
+- Performance-based recommendations
+- Manual approval options
+- Recycling history
+
+Prevent excessive posting and duplicate loops.
+
+Never recycle unavailable or unauthorized media.
+
+---
+
+# 13. AI CONTENT CREATION ENGINE
+
+Implement a central AI gateway.
+
+### Providers
+
+- OpenRouter
+- Gemini
+- Groq
+
+### Features
+
+- Caption generation
+- Caption rewriting
+- Platform-specific optimization
+- Hashtag suggestions
+- Title generation
+- Description generation
+- Content summaries
+- Brand voice adaptation
+- Call-to-action suggestions
+- Content improvement recommendations
+- Translation
+- Content classification
+- AI-assisted replies where supported
+
+### AI model management
+
+The Super Admin must control:
+
+- Enabled providers
+- Enabled models
+- Default models
+- Task-specific routing
+- Fallback models
+- Timeouts
+- Retry policies
+- Maximum token usage
+- Provider spending limits
+- Model cost estimates
+- User credit costs
+
+Fallback must occur only between compatible models and supported capabilities.
+
+Never send sensitive content to another provider without respecting user settings and applicable privacy requirements.
+
+---
+
+# 14. AI IMAGE GENERATION AND GRAPHICS EDITOR
+
+Create a professional SocialOrbit Creative Studio.
+
+### Image generation
+
+Use supported image-capable models through OpenRouter or another configured provider.
+
+Support:
+
+- Text-to-image generation
+- Multiple aspect ratios
+- Thumbnails
+- Promotional graphics
+- Social media covers
+- Branded announcement graphics
+- Content-specific templates
+
+### Graphics editor
+
+Include:
+
+- Canvas editing
+- Text layers
+- Image layers
+- Shapes
+- Backgrounds
+- Color controls
+- Font selection
+- Positioning
+- Resizing
+- Alignment
+- Undo and redo
+- Templates
+- Brand kits
+- Preview
+- Export
+
+Allow users to attach generated graphics to supported publishing workflows.
+
+Never promise unsupported platform-specific cover upload functionality.
+
+Track image AI credits independently from text AI credits.
+
+---
+
+# 15. AI VIDEO REPURPOSING
+
+Implement a video repurposing studio.
+
+### Workflow
+
+1. User selects an accessible source video.
+2. System validates media availability and permissions.
+3. Worker analyzes video metadata.
+4. Optional transcription is generated.
+5. AI suggests useful highlights.
+6. User previews suggested clips.
+7. User adjusts clip boundaries.
+8. FFmpeg processes the approved clips.
+9. User reviews the results.
+10. Clips are saved temporarily or scheduled for publishing.
+
+### Features
+
+- Clip trimming
+- Aspect-ratio conversion
+- Subtitle generation
+- Caption styling
+- Thumbnail selection
+- Export settings
+- Platform compatibility checks
+- Progress indicators
+- Cancellation
+- Error recovery
+
+Heavy processing must run in dedicated workers, not within short-lived web requests.
+
+---
+
+# 16. MULTILINGUAL LOCALIZATION
+
+Support content localization.
+
+Initial languages:
+
+- English
+- Kiswahili
+
+Design the system so additional languages can be added later.
+
+Features:
+
+- Caption translation
+- Title translation
+- Description translation
+- Hashtag adaptation
+- Subtitle translation
+- Language preferences
+- Platform-specific language variants
+- Human review before publishing
+
+Do not automatically publish translations without honoring the user's approval settings.
+
+---
+
+# 17. PUBLISHING RISK CHECKER
+
+Build a pre-publication validation engine.
+
+Check:
+
+- Missing permissions
+- Unsupported content types
+- Invalid file formats
+- Media size limits
+- Missing captions where required
+- Expired media
+- Duplicate publication
+- Potential policy concerns
+- Potential copyright concerns
+- Suspicious links
+- Unsupported destination features
+
+Display actionable warnings and errors.
+
+Clearly distinguish technical validation from probabilistic AI-generated risk assessments.
+
+Do not claim the checker guarantees copyright compliance or platform approval.
+
+---
+
+# 18. SMART SCHEDULING AND BEST-TIME RECOMMENDATIONS
+
+Build a professional content calendar.
+
+Support:
+
+- Day view
+- Week view
+- Month view
+- Scheduled queues
+- Timezone-aware scheduling
+- Platform filters
+- Drag-and-drop rescheduling where appropriate
+- Bulk scheduling
+- Publishing slots
+- Pause and resume
+- Scheduling conflict warnings
+
+### Best-time recommendations
+
+Analyze available historical performance and audience activity.
+
+Provide recommendations only when sufficient data exists.
+
+Explain when recommendations are estimates.
+
+Do not fabricate audience metrics.
+
+---
+
+# 19. UNIFIED SOCIAL INBOX
+
+Implement engagement management where official APIs permit.
+
+Features:
+
+- Supported comments
+- Supported messages
+- Supported mentions
+- Conversation filtering
+- Assignment to team members
+- Internal notes
+- Reply templates
+- AI-assisted reply suggestions
+- Conversation status
+- Search
+- Notifications
+
+Use a capability-aware interface.
+
+Do not display unsupported provider features as functioning integrations.
+
+---
+
+# 20. ADVANCED ANALYTICS
+
+Create a professional analytics dashboard.
+
+Include available metrics such as:
+
+- Published posts
+- Successful publications
+- Failed publications
+- Engagement
+- Views
+- Reach
+- Impressions
+- Follower growth
+- Content performance
+- Platform comparisons
+- Publishing frequency
+- Best-performing content
+- AI usage
+- Automation performance
+
+Provide:
+
+- Date filters
+- Platform filters
+- Workspace filters
+- Charts
+- Tables
+- Exportable reports
+- Historical snapshots
+
+Label unavailable metrics clearly.
+
+Never invent analytics values or combine incompatible metrics without explanation.
+
+---
+
+# 21. SUBSCRIPTION PLANS
+
+Implement four configurable subscription tiers.
+
+| Feature | Free | Creator | Pro | Agency |
+|---|---:|---:|---:|---:|
+| Connected accounts | 2 | 5 | 15 | 50 |
+| Old unique videos/month | 20 | 200 | 1,000 | 5,000 |
+| Publishing jobs/month | 20 | 300 | 1,500 | 6,000 |
+| Text AI credits/month | 20 | 500 | 2,000 | 8,000 |
+| Image AI credits/month | 2 | 20 | 100 | 400 |
+| Repurposed clips/month | 1 | 10 | 50 | 200 |
+| Evergreen rules | 1 | 5 | 20 | 100 |
+| Inbox conversations/month | 20 | 200 | 1,000 | 5,000 |
+| Analytics history | 7 days | 30 days | 90 days | 365 days |
+
+### Provisional monthly prices
+
+- Free: KSh 0
+- Creator: KSh 499
+- Pro: KSh 1,499
+- Agency: KSh 3,999
+
+These are initial proposed values, not finalized commercial prices.
+
+The Super Admin must be able to edit all prices and limits without modifying source code.
+
+### Subscription principles
+
+Free users should be able to try premium capabilities within limited allowances.
+
+Do not disable all premium features merely because a user is on the Free plan.
+
+Enforce plan limits on the backend.
+
+Use server-side entitlement checks for every billable operation.
+
+---
+
+# 22. AI CREDIT SYSTEM
+
+Implement separate quotas for:
+
+- Text AI credits
+- Image AI credits
+- Video repurposing
+- Publishing jobs
+- Historical video distribution
+
+### Credit behavior
+
+- Show available credits.
+- Display estimated credit costs before expensive operations.
+- Notify users at configurable thresholds.
+- Allow one-time top-ups.
+- Never automatically charge users when credits run out.
+- Allow subscription upgrades.
+- Reset monthly allocations according to the billing cycle.
+- Track top-up credits separately.
+- Preserve valid purchased credits according to published policies.
+
+When text AI credits are exhausted, ordinary manual publishing must remain available if the user still has publishing allowances.
+
+### Financial correctness
+
+Use transactional credit ledgers.
+
+Implement reservation, settlement and refund logic.
+
+Prevent double deductions.
+
+Make billing operations idempotent.
+
+Record every balance-changing event.
+
+---
+
+# 23. PAYMENTS AND BILLING
+
+Integrate:
+
+- M-Pesa
+- Pesapal
+
+Support:
+
+- Subscription checkout
+- Subscription renewal
+- AI credit purchases
+- Payment verification
+- Payment history
+- Receipts
+- Invoices
+- Failed payment handling
+- Refund tracking
+- Payment reconciliation
+- Subscription expiration
+- Upgrade and downgrade workflows
+
+Never activate a paid subscription based solely on a browser redirect.
+
+Verify payment status through trusted server-to-server provider mechanisms.
+
+Use secure callback validation and idempotency.
+
+Handle asynchronous payments and reconciliation failures.
+
+For mobile applications, implement platform-compliant purchase flows. Review applicable Apple and Google policies before enabling purchases of digital subscriptions or AI credits inside the app.
+
+---
+
+# 24. CREATOR DASHBOARD
+
+Design a polished, professional user workspace.
+
+### Navigation
+
+- Dashboard
+- Create Post
+- Content Library
+- AI Creative Studio
+- Video Repurposing
+- Calendar
+- Automation
+- Social Accounts
+- Social Inbox
+- Analytics
+- AI Tools
+- Billing
+- Notifications
+- Support Center
+- Settings
+
+### Dashboard overview
+
+Display:
+
+- Connected accounts
+- Scheduled posts
+- Published posts
+- Failed posts
+- AI credit balances
+- Subscription usage
+- Automation status
+- Recent activity
+- Important notifications
+- Quick actions
+
+### User experience
+
+Implement:
+
+- Responsive sidebar
+- Mobile bottom navigation
+- Global search
+- Keyboard accessibility
+- Clear loading states
+- Empty states
+- Guided onboarding
+- Confirmation dialogs
+- Toast notifications
+- Form validation
+- Autosaved drafts where appropriate
+- Accessible contrast
+- Light and dark themes if feasible
+
+Every visible dashboard action must connect to a functioning route or clearly indicate that the feature is unavailable.
+
+---
+
+# 25. SUPER ADMIN COMMAND CENTER
+
+Build a separate secure administrative interface.
+
+### Main sections
+
+1. Overview
+2. Live Activity
+3. Users
+4. Workspaces
+5. Social Connections
+6. Subscriptions
+7. Payments
+8. AI Management
+9. Credit Management
+10. Publishing Operations
+11. Automation Rules
+12. Content Management
+13. Analytics
+14. Support & Feedback
+15. Worker Infrastructure
+16. Storage Management
+17. Security
+18. Audit Logs
+19. Business Reports
+20. System Settings
+
+### Administrative capabilities
+
+Super Admin must be able to:
+
+- Manage users and workspaces
+- Suspend accounts with appropriate safeguards
+- Manage subscription plans
+- Adjust usage limits
+- Configure credit packages
+- Manage supported payment providers
+- View verified revenue
+- Monitor AI spending
+- Configure AI providers and models
+- Enable or disable features
+- Inspect publishing failures
+- Pause publishing globally in emergencies
+- Monitor queue health
+- Monitor media storage
+- View worker health
+- Review security events
+- Manage support tickets
+- Manage announcements
+- Review operational reports
+
+### Staff roles
+
+Support:
+
+- Super Admin
+- Operations Admin
+- Billing Manager
+- Support Agent
+- Content Moderator
+- Read-only Analyst
+
+Use least-privilege RBAC.
+
+Require explicit confirmation and appropriate authorization for sensitive actions.
+
+Record administrative changes in audit logs.
+
+---
+
+# 26. SUPPORT AND FEEDBACK CENTER
+
+Create a fully functional support system.
+
+### User-facing support
+
+Allow users to submit:
+
+- Bug reports
+- Technical issues
+- Feature suggestions
+- Improvement requests
+- Billing questions
+- General inquiries
+
+Ticket form fields:
+
+- Subject
+- Category
+- Description
+- Priority
+- Optional attachments
+
+### Ticket functionality
+
+- Unique ticket reference
+- Ticket status
+- User replies
+- Staff replies
+- Notifications
+- Attachment handling
+- Ticket history
+- Resolution confirmation
+- Support rating
+
+### Admin support dashboard
+
+- Ticket inbox
+- Assignment
+- Priority filters
+- Internal notes
+- Response tracking
+- Duplicate ticket grouping
+- Support analytics
+- Knowledge base management
+
+### Community feature requests
+
+Implement:
+
+- Public or workspace-appropriate feature board
+- Feature suggestions
+- Voting
+- Comments
+- Duplicate merging
+- Roadmap statuses
+
+Statuses:
+
+- Under Review
+- Planned
+- In Development
+- Released
+- Declined
+
+### AI support assistant
+
+Use verified documentation to answer common questions.
+
+Escalate uncertain issues to human support.
+
+Support-assistant costs must use an administrator-controlled budget rather than automatically consuming users' creative AI credits.
+
+---
+
+# 27. NOTIFICATION SYSTEM
+
+Implement:
+
+- In-app notifications
+- Email notifications
+- Mobile push notifications
+- Browser notifications where supported
+
+Events include:
+
+- Successful publication
+- Failed publication
+- Account disconnection
+- Expiring media
+- Subscription expiration
+- Credit exhaustion
+- Payment confirmation
+- Support replies
+- Important announcements
+- Security alerts
+
+Allow users to configure notification preferences.
+
+Avoid duplicate notifications.
+
+Do not expose sensitive information in push notification payloads.
+
+---
+
+# 28. MEDIA STORAGE AND RETENTION
+
+### Upload policy
+
+Maximum uploaded file size: **100 MB per media file**.
+
+Validate file size and type on both client and server.
+
+### Retention policy
+
+Uploaded and generated temporary media must be deleted within seven days under the defined retention policy.
+
+Retain appropriate metadata and publication history separately.
+
+### Storage requirements
+
+- Private storage buckets
+- Signed URLs
+- Access authorization
+- Upload validation
+- Expiration timestamps
+- Scheduled cleanup
+- Cleanup retries
+- Storage usage tracking
+- Administrative storage monitoring
+
+Prevent scheduling media-dependent jobs beyond the available media lifetime unless another authorized reusable source exists.
+
+Ensure subscription limits and file-upload limits are compatible with the actual storage provider configuration.
+
+Do not assume Supabase Free supports 100 MB uploads without checking current restrictions.
+
+---
+
+# 29. MOBILE APPLICATIONS
+
+Build SocialOrbit for:
+
+- Android
+- iOS
+
+Use Capacitor initially to reuse the established web frontend where practical.
+
+### Mobile features
+
+- Secure login
+- Creator dashboard
+- Social account management
+- Content creation
+- Camera access
+- Gallery uploads
+- Draft management
+- Scheduling
+- AI tools
+- Analytics
+- Notifications
+- Support tickets
+- Profile settings
+
+### Mobile-specific functionality
+
+- Native push notifications
+- Secure token storage
+- App lifecycle handling
+- Offline draft editing
+- Synchronization when connectivity returns
+- Deep links
+- Media picker
+- Optional biometric unlock
+
+Publishing and automation must continue on the server even when the mobile application is closed.
+
+Use platform-compliant OAuth redirects and secure authentication callbacks.
+
+Do not embed privileged backend secrets in the mobile application.
+
+Provide reproducible Android and iOS build instructions.
+
+---
+
+# 30. PUBLIC WEBSITE
+
+Build a professional marketing website.
+
+### Pages
+
+- Home
+- Features
+- How It Works
+- Pricing
+- About
+- Contact
+- Help Center
+- Blog or Updates
+- Login
+- Register
+- Privacy Policy
+- Terms of Service
+- Cookie Policy
+- Acceptable Use Policy
+
+### Homepage sections
+
+- Hero with SocialOrbit branding
+- Platform introduction
+- Supported social networks
+- AI-powered creation
+- Automated publishing
+- Video repurposing
+- Analytics
+- Subscription comparison
+- Frequently asked questions
+- Testimonials only when genuine
+- Clear registration CTA
+- Footer with company information
+
+### SEO
+
+Implement:
+
+- Semantic HTML
+- Unique page titles
+- Meta descriptions
+- Open Graph metadata
+- Twitter/X sharing metadata
+- Canonical URLs
+- Sitemap
+- robots.txt
+- Structured data where appropriate
+- Optimized images
+- Responsive performance
+
+Do not expose private dashboard content to search engines.
+
+---
+
+# 31. DATABASE ARCHITECTURE
+
+Create normalized PostgreSQL schemas and migrations.
+
+Core entities should include:
+
+### Identity
+- profiles
+- workspaces
+- workspace_members
+- roles
+- permissions
+
+### Social integrations
+- social_accounts
+- oauth_credentials
+- connection_events
+- provider_capabilities
+
+### Content
+- canonical_content
+- content_sources
+- media_assets
+- content_fingerprints
+- content_variants
+- drafts
+
+### Publishing
+- distribution_rules
+- publishing_slots
+- distribution_jobs
+- publication_attempts
+- publication_results
+
+### Automation
+- detection_events
+- sync_runs
+- evergreen_rules
+- recycling_history
+
+### AI
+- ai_providers
+- ai_models
+- ai_requests
+- design_projects
+- design_layers
+- brand_kits
+- clip_projects
+- clip_exports
+- content_translations
+
+### Analytics
+- metric_snapshots
+- content_performance
+- audience_activity
+- posting_recommendations
+
+### Inbox
+- inbox_threads
+- inbox_messages
+- inbox_assignments
+
+### Billing
+- plans
+- plan_limits
+- subscriptions
+- usage_ledgers
+- credit_wallets
+- credit_transactions
+- payments
+- invoices
+
+### Support
+- support_tickets
+- ticket_messages
+- ticket_attachments
+- feature_requests
+- feature_votes
+
+### Administration
+- provider_configs
+- feature_flags
+- system_alerts
+- audit_logs
+
+Create:
+
+- Foreign keys
+- Unique constraints
+- Appropriate indexes
+- Check constraints
+- Timestamp fields
+- Tenant scoping
+- Safe migrations
+- Row Level Security policies
+
+Test that unauthorized users cannot access other users' or workspaces' data.
+
+---
+
+# 32. SECURITY REQUIREMENTS
+
+Implement security as a core requirement.
+
+### Mandatory controls
+
+- HTTPS
+- Secure authentication
+- Strong password policies
+- MFA for privileged accounts
+- Role-based access control
+- Tenant isolation
+- Row Level Security
+- OAuth state validation
+- PKCE where applicable
+- CSRF protection
+- Input validation
+- SQL injection prevention
+- XSS protection
+- Rate limiting
+- Secure file uploads
+- Webhook signature verification
+- Encryption of sensitive credentials
+- Secret rotation procedures
+- Secure session handling
+- Audit logging
+
+Follow applicable OWASP guidance.
+
+Never trust client-supplied subscription status, credit balances, workspace IDs or role claims without server-side authorization.
+
+Apply explicit authorization checks to every sensitive operation.
+
+---
+
+# 33. PERFORMANCE AND SCALABILITY
+
+Design for growth without unnecessary early complexity.
+
+Implement:
+
+- Database connection pooling
+- Efficient queries
+- Pagination
+- Appropriate indexes
+- Redis-backed job queues
+- Bounded worker concurrency
+- Rate-limit-aware API calls
+- Streaming media processing where appropriate
+- Image optimization
+- Lazy loading
+- Caching with clear invalidation rules
+- Backpressure
+- Resource limits
+- Monitoring
+
+Avoid running FFmpeg jobs inside Vercel serverless functions.
+
+Keep the website responsive during large background operations.
+
+---
+
+# 34. TESTING STRATEGY — MANDATORY
+
+**No module may be marked complete merely because its code was written.**
+
+Build a comprehensive automated testing system.
+
+### Unit tests
+
+Test:
+
+- Business rules
+- Validators
+- Permission checks
+- Quota calculations
+- Credit calculations
+- Scheduling logic
+- Duplicate detection
+- Platform capability decisions
+- Media expiration logic
+- AI routing logic
+
+### Integration tests
+
+Test:
+
+- API and database operations
+- Authentication flows
+- Supabase access
+- Queue processing
+- Redis interactions
+- Storage access
+- AI provider adapters
+- Payment callbacks
+- Social platform adapters using controlled mocks and sandboxes
+
+### End-to-end tests
+
+Use Playwright or an equivalent framework.
+
+Verify:
+
+- Registration
+- Login
+- Profile editing
+- Workspace creation
+- Social account connection flows
+- Draft creation
+- Scheduling
+- Publishing status updates
+- AI credit consumption
+- Subscription checkout
+- Support ticket creation
+- Administrator workflows
+- Logout
+
+### Mobile tests
+
+Verify:
+
+- Android application startup
+- Authentication
+- Navigation
+- Media selection
+- Notifications
+- Draft synchronization
+- API connectivity
+- Error handling
+
+Perform corresponding iOS testing using an appropriate macOS/iOS build environment.
+
+### Security tests
+
+Verify:
+
+- Tenant isolation
+- RBAC enforcement
+- Unauthorized API access rejection
+- Expired session handling
+- Webhook verification
+- Upload restrictions
+- Rate limiting
+- Credit manipulation prevention
+- Payment callback replay protection
+- Token confidentiality
+
+### Reliability tests
+
+Simulate:
+
+- Network failures
+- Redis disconnections
+- Worker restarts
+- Provider timeouts
+- Social API rate limits
+- Duplicate webhook delivery
+- Duplicate publishing requests
+- Payment callback retries
+- AI provider outages
+- Media cleanup failures
+
+Verify that the system recovers safely.
+
+---
+
+# 35. QUALITY GATES
+
+Use strict quality gates before deployment.
+
+### Gate 1 — Code quality
+
+- TypeScript type checking passes.
+- Linting passes.
+- Formatting checks pass.
+- No unresolved merge conflicts.
+- No accidentally committed credentials.
+
+### Gate 2 — Database
+
+- Migrations apply successfully to a clean database.
+- Foreign key constraints are valid.
+- RLS tests pass.
+- Rollback or recovery procedures are documented.
+
+### Gate 3 — Backend
+
+- API contract tests pass.
+- Validation tests pass.
+- Authorization tests pass.
+- Error handling is verified.
+
+### Gate 4 — Background workers
+
+- Queue processing works.
+- Retries behave correctly.
+- Idempotency is verified.
+- Worker restart recovery passes.
+
+### Gate 5 — Billing
+
+- Verified payments activate the correct entitlements.
+- Failed payments do not activate subscriptions.
+- Credits cannot be double-spent.
+- Refunds and failed AI operations are handled correctly.
+
+### Gate 6 — Frontend
+
+- Core user journeys pass.
+- Responsive layouts work.
+- Forms validate correctly.
+- Accessibility checks pass for critical workflows.
+
+### Gate 7 — Mobile
+
+- Android build succeeds.
+- iOS build succeeds in a supported environment.
+- Native functionality is tested on target devices or simulators.
+- Mobile-specific restrictions are documented.
+
+### Gate 8 — Deployment
+
+- Production builds succeed.
+- Environment validation passes.
+- Health checks work.
+- Logging and monitoring work.
+- Deployment and rollback procedures are verified.
+
+### Gate 9 — Final regression
+
+Run the complete applicable test suite after the last code changes.
+
+Any unresolved critical or high-severity issue blocks production release.
+
+Do not claim tests passed unless actual execution results are available.
+
+---
+
+# 36. CI/CD AUTOMATION
+
+Configure GitHub Actions.
+
+The pipeline should:
+
+1. Install dependencies using a lockfile.
+2. Check formatting.
+3. Run linting.
+4. Run TypeScript type checks.
+5. Run unit tests.
+6. Run integration tests.
+7. Build applications.
+8. Run security and dependency checks.
+9. Run applicable end-to-end tests.
+10. Publish test reports.
+11. Deploy to staging.
+12. Execute staging smoke tests.
+13. Require approval before production deployment.
+14. Verify production health.
+15. Support rollback.
+
+Use separate development, staging and production environments.
+
+Never run destructive tests against production data.
+
+---
+
+# 37. IMPLEMENTATION PHASES
+
+Complete the system in a controlled order.
+
+## Phase 1 — Foundation
+
+- Project structure
+- Database
+- Authentication
+- Workspaces
+- RBAC
+- Shared API
+- Environment configuration
+- Initial CI/CD
+- Design system
+
+## Phase 2 — Core Social Platform
+
+- Social OAuth
+- Account management
+- Content library
+- New content detection
+- Historical video discovery
+- Media management
+- Publishing engine
+- Scheduler
+- Duplicate prevention
+
+## Phase 3 — AI Creative Tools
+
+- AI gateway
+- Caption generation
+- AI credit tracking
+- Image generation
+- Graphics editor
+- Brand kits
+- Risk checker
+
+## Phase 4 — Business and Administration
+
+- Subscription plans
+- M-Pesa
+- Pesapal
+- Credit top-ups
+- Billing reports
+- Super Admin dashboard
+- User management
+- Provider management
+
+## Phase 5 — Advanced Automation
+
+- Historical video redistribution
+- Evergreen recycling
+- Video repurposing
+- Best-time recommendations
+- Localization
+- Advanced analytics
+
+## Phase 6 — Engagement and Support
+
+- Unified social inbox
+- Support tickets
+- Feature request board
+- Voting
+- Knowledge base
+- AI support assistant
+
+## Phase 7 — Mobile Applications
+
+- PWA
+- Capacitor Android application
+- Native notifications
+- Media selection
+- Offline drafts
+- iOS application
+- Mobile testing
+
+## Phase 8 — Final Integration and Release
+
+- Full regression testing
+- Security review
+- Performance testing
+- Deployment validation
+- Documentation
+- Release readiness assessment
+
+Every phase must include automated tests and integration verification.
+
+Do not defer all testing until Phase 8.
+
+---
+
+# 38. DOCUMENTATION REQUIREMENTS
+
+Deliver complete documentation.
+
+Include:
+
+- README
+- Architecture overview
+- Database schema
+- API documentation
+- Environment variable reference
+- Supabase setup
+- Vercel deployment guide
+- Worker deployment guide
+- Redis configuration
+- Social API setup guides
+- AI provider setup
+- M-Pesa setup
+- Pesapal setup
+- Brevo setup
+- Android build guide
+- iOS build guide
+- Security configuration
+- Backup and recovery procedures
+- Testing instructions
+- Troubleshooting guide
+- Super Admin manual
+- Creator user guide
+
+Provide `.env.example` files containing placeholders, never real secrets.
+
+---
+
+# 39. FINAL ACCEPTANCE CRITERIA
+
+Before declaring SocialOrbit ready, verify the following:
+
+- Users can register, authenticate and manage accounts.
+- Workspaces enforce correct permissions.
+- Supported social accounts connect securely.
+- Platform-specific capabilities are respected.
+- Eligible content is detected correctly.
+- Publishing jobs execute reliably.
+- Duplicate publication prevention works.
+- Scheduled publishing works independently of user devices.
+- Media storage and cleanup policies are enforced.
+- AI tools respect configured models and credits.
+- Subscription entitlements are enforced.
+- Payments are securely verified.
+- Analytics use real provider or system data.
+- Support tickets function end to end.
+- Super Admin controls function correctly.
+- Web and mobile interfaces connect to the same backend.
+- Security tests pass.
+- Production builds succeed.
+- Critical workflows pass automated tests.
+- External integration limitations are clearly disclosed.
+- Deployment and recovery instructions are reproducible.
+
+Where live provider credentials or approval are unavailable, report the integration as **implemented but awaiting live verification**, not as fully verified.
+
+---
+
+# 40. FINAL DELIVERY REQUIREMENTS
+
+Deliver:
+
+1. Complete source code.
+2. Database migrations.
+3. Working frontend.
+4. Working backend.
+5. Background workers.
+6. Supported social platform adapters.
+7. AI integration modules.
+8. Billing system.
+9. Creator dashboard.
+10. Super Admin dashboard.
+11. Support and feedback system.
+12. Android project.
+13. iOS project.
+14. Automated test suites.
+15. CI/CD configuration.
+16. Deployment configuration.
+17. Documentation.
+18. Test execution reports.
+19. Security and dependency scan reports.
+20. Known limitations and release readiness report.
+
+The final report must identify:
+
+- Implemented features
+- Verified features
+- Test commands executed
+- Test results
+- Failed or skipped tests
+- External integrations awaiting credentials or approvals
+- Outstanding defects
+- Deployment status
+- Remaining production requirements
+
+**Never describe the system as error-free or fully production-ready without supporting evidence.**
+
+---
+
+# 41. EXECUTION INSTRUCTION
+
+Begin by inspecting the existing repository, if one is provided.
+
+If no repository exists, initialize the complete SocialOrbit monorepo.
+
+First produce:
+
+1. Architecture specification
+2. Module dependency map
+3. Database design
+4. API contracts
+5. Implementation milestones
+6. Test strategy
+7. Deployment plan
+
+Then begin implementation.
+
+Work systematically through the modules, writing production code and tests together.
+
+After completing each module:
+
+- Run relevant tests.
+- Resolve failures.
+- Verify database integration.
+- Verify API behavior.
+- Verify frontend interactions.
+- Update documentation.
+- Report verified progress.
+
+Do not replace real functionality with superficial UI mockups.
+
+Do not abandon unfinished modules to move to easier features.
+
+Do not fabricate provider responses, payment confirmations or test results.
+
+When implementation requires missing credentials, permissions, infrastructure or product decisions, document the dependency and continue with independent work that can be safely completed.
+
+At the end, perform a full regression test, inspect deployment readiness, and provide an evidence-based release report.
+
+**Build SocialOrbit as a real, scalable, secure, professional commercial SaaS product — not merely a prototype.**
+
+**SOCIALORBIT BY ELIAHTECH — CREATE • AUTOMATE • GROW.**

@@ -1,0 +1,140 @@
+
+> socialorbit@0.2.0 test
+> node --disable-warning=ExperimentalWarning --experimental-strip-types --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: free plan permits limited premium functionality
+ok 1 - free plan permits limited premium functionality
+  ---
+  duration_ms: 1.024587
+  type: 'test'
+  ...
+# Subtest: validate credit quantities
+ok 2 - validate credit quantities
+  ---
+  duration_ms: 0.116396
+  type: 'test'
+  ...
+# Subtest: seven-day media retention
+ok 3 - seven-day media retention
+  ---
+  duration_ms: 0.489939
+  type: 'test'
+  ...
+# Subtest: media limit is 100 MiB
+ok 4 - media limit is 100 MiB
+  ---
+  duration_ms: 0.089946
+  type: 'test'
+  ...
+# Subtest: destination capabilities do not claim YouTube text posting
+ok 5 - destination capabilities do not claim YouTube text posting
+  ---
+  duration_ms: 0.100672
+  type: 'test'
+  ...
+# Subtest: active publishing adapters more restrictive than advertised capabilities
+ok 6 - active publishing adapters more restrictive than advertised capabilities
+  ---
+  duration_ms: 0.092559
+  type: 'test'
+  ...
+# Subtest: preflight blocks unknown and unauthorized providers
+ok 7 - preflight blocks unknown and unauthorized providers
+  ---
+  duration_ms: 0.265641
+  type: 'test'
+  ...
+# Subtest: preflight blocks expiry and file >100 MiB
+ok 8 - preflight blocks expiry and file >100 MiB
+  ---
+  duration_ms: 0.341085
+  type: 'test'
+  ...
+# Subtest: preflight blocks duplicate publication
+ok 9 - preflight blocks duplicate publication
+  ---
+  duration_ms: 0.260964
+  type: 'test'
+  ...
+# Subtest: wallet reservation and settlement consume monthly first
+ok 10 - wallet reservation and settlement consume monthly first
+  ---
+  duration_ms: 1.052018
+  type: 'test'
+  ...
+# Subtest: wallet releases failed AI job reservation
+ok 11 - wallet releases failed AI job reservation
+  ---
+  duration_ms: 0.210237
+  type: 'test'
+  ...
+# Subtest: wallet refuses negative or excess charges
+ok 12 - wallet refuses negative or excess charges
+  ---
+  duration_ms: 0.338761
+  type: 'test'
+  ...
+# Subtest: slot scheduler respects weekday and IANA time zone
+ok 13 - slot scheduler respects weekday and IANA time zone
+  ---
+  duration_ms: 21.486305
+  type: 'test'
+  ...
+# Subtest: publishing keys unique by content, destination and time
+ok 14 - publishing keys unique by content, destination and time
+  ---
+  duration_ms: 0.15235
+  type: 'test'
+  ...
+# Subtest: AES-GCM token encryption roundtrip and tamper rejection
+ok 15 - AES-GCM token encryption roundtrip and tamper rejection
+  ---
+  duration_ms: 2.349317
+  type: 'test'
+  ...
+# Subtest: signed OAuth state requires HMAC integrity
+ok 16 - signed OAuth state requires HMAC integrity
+  ---
+  duration_ms: 0.622881
+  type: 'test'
+  ...
+# Subtest: PKCE S256 challenge has valid shape
+ok 17 - PKCE S256 challenge has valid shape
+  ---
+  duration_ms: 0.409288
+  type: 'test'
+  ...
+# Subtest: Kenyan phone normalization
+ok 18 - Kenyan phone normalization
+  ---
+  duration_ms: 0.228595
+  type: 'test'
+  ...
+# Subtest: video repurposing accepts only positive clips of at most 60 seconds
+ok 19 - video repurposing accepts only positive clips of at most 60 seconds
+  ---
+  duration_ms: 0.221043
+  type: 'test'
+  ...
+# Subtest: video clip conversion pads rather than silently crops
+ok 20 - video clip conversion pads rather than silently crops
+  ---
+  duration_ms: 0.124227
+  type: 'test'
+  ...
+# Subtest: video clip processing never uses a shell script as a media input
+ok 21 - video clip processing never uses a shell script as a media input
+  ---
+  duration_ms: 0.078318
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 141.002112

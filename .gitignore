@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+coverage/
+*.log
+.DS_Store
+android/
+ios/
+
+# built by scripts/build-web.mjs
+apps/web/public/vendor/
+.vercel/
+apps/web/public/build-info.json

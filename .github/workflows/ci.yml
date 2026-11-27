@@ -1,0 +1,51 @@
+name: SocialOrbit quality checks
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Ensure lockfile was committed
+        run: |
+          if [ ! -s package-lock.json ]; then
+            echo "ERROR: package-lock.json is missing. Run npm install on a networked machine, verify, and commit it." >&2
+            exit 1
+          fi
+      - name: Install reproducibly from committed lockfile
+        run: npm ci --no-audit --no-fund
+      - name: Build browser assets
+        run: npm run build:web
+      - name: Verify the committed API bundle is up to date
+        run: |
+          npm run build:api
+          git diff --exit-code -- api/_app.js || { echo 'api/_app.js is stale: run npm run build:api and commit it'; exit 1; }
+      - name: TypeScript type check
+        run: npm run typecheck
+      - name: Core business tests
+        run: npm test
+      - name: TypeScript parser checks
+        run: npm run test:syntax
+      - name: Browser-side JS parser checks
+        run: |
+          node --check apps/web/public/app.js
+          node --check apps/web/public/admin.js
+          node --check apps/web/public/landing.js
+          node --check apps/web/public/sw.js
+      - name: Basic static asset validation
+        run: |
+          test -s apps/web/public/assets/socialorbit-logo.png
+          test -s apps/web/public/assets/app-icon.png
+          test -s apps/web/public/favicon.ico
+      - name: Scan tracked source for obvious accidental credentials
+        run: |
+          if grep -RIlE '(SUPABASE_SERVICE_ROLE_KEY|OPENROUTER_API_KEY)=[A-Za-z0-9_-]{25,}' \
+              apps packages --include='*.ts' --include='*.js'; then
+            echo 'Potential hard-coded credential detected'; exit 1;
+          fi

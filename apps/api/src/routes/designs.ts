@@ -1,0 +1,12 @@
+import {Router} from 'express';
+import {z} from 'zod';
+import {database} from '../db.ts';
+import {assert,asyncRoute} from '../http.ts';
+import {requireAuth,needSpace,workspace,uuid} from '../middleware/auth.ts';
+export const designsRoutes=Router({mergeParams:true});
+designsRoutes.use(requireAuth,needSpace());
+const layer=z.object({id:z.string().max(100),type:z.enum(['text','rect','circle']),text:z.string().max(1000).optional(),x:z.number().min(-2000).max(3000),y:z.number().min(-2000).max(3000),width:z.number().min(0).max(3000).optional(),height:z.number().min(0).max(3000).optional(),size:z.number().min(8).max(300).optional(),color:z.string().regex(/^#[0-9a-f]{6}$/i)}).strict();
+const schema=z.object({title:z.string().trim().min(1).max(100),canvas:z.object({width:z.number().int().min(320).max(2500),height:z.number().int().min(320).max(2500),background:z.string().regex(/^#[0-9a-f]{6}$/i)}),layers:z.array(layer).max(100)}).strict();
+designsRoutes.get('/',asyncRoute(async(req,res)=>{const {data,error}=await database().from('design_projects').select('id,title,layers,canvas,created_at,updated_at').eq('workspace_id',workspace(req).id).order('updated_at',{ascending:false}).limit(50);assert(!error,503,'Designs unavailable');res.json(data)}));
+designsRoutes.post('/',needSpace('editor'),asyncRoute(async(req,res)=>{const p=schema.parse(req.body);const {data,error}=await database().from('design_projects').insert({...p,workspace_id:workspace(req).id}).select('id,title').single();assert(!error,503,'Cannot create design');res.status(201).json(data)}));
+designsRoutes.patch('/:id',needSpace('editor'),asyncRoute(async(req,res)=>{const p=schema.parse(req.body),id=uuid.parse(req.params.id);const {data,error}=await database().from('design_projects').update({...p,updated_at:new Date().toISOString()}).eq('id',id).eq('workspace_id',workspace(req).id).select('id,title').maybeSingle();assert(!error,503,'Design update failed');assert(data,404,'Design not found');res.json(data)}));
